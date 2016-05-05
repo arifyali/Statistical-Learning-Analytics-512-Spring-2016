@@ -1,0 +1,208 @@
+\documentclass{article}
+\usepackage{amscd, amssymb, amsmath, verbatim, setspace}
+\usepackage[left=1.0in, right=1.0in, top=1.0in, bottom=1.0in]{geometry}
+\usepackage{mathrsfs}
+\usepackage{listings}
+<<echo=FALSE>>=
+library(knitr)
+opts_knit$set(root.dir = "~/Documents/Georgetown/Statistical-Learning-Analytics-512-Spring-2016/Final Exam/",concordance=TRUE)
+opts_chunk$set(fig.keep="high", out.width="0.40\\linewidth")
+@
+
+\begin{document}
+\begin{flushright}
+Arif Ali\\
+Analytics 512 Statistical Learning\\
+May 12, 2016\\
+\end{flushright}
+
+\begin{center}
+\LARGE\textbf{Final Exam take home portion}
+  \end{center}
+<<>>=
+library("mlbench")
+data(Ozone)
+Ozone = as.data.frame(mapply(as.numeric, Ozone))
+@
+\section*{Exercise 1}
+<<>>=
+set.seed(1933)
+names(Ozone) <- c("mo","day","wday","maxoz","pressh","wind","hum",
+                  "temp1","temp2","inverh","pressg","invert","vis")
+Ozone$time = 1:366
+Ozone = na.omit(Ozone)
+train = sample(nrow(Ozone), nrow(Ozone)*.70)
+Ozone_train = Ozone[train,]
+@
+\section*{Exercise 2}
+<<>>=
+library(boot) 
+poly.cv.error = c()
+d = 1:10
+for(i in d){
+  ozone_pm = glm(maxoz~poly(time,i), data = Ozone_train)
+  poly.cv.error[i] = cv.glm(Ozone_train, ozone_pm, K = 10)$delta[2]
+}
+plot(d,poly.cv.error,type="b")
+ozone_pm = lm(maxoz~poly(time,d[poly.cv.error == min(poly.cv.error)]), data = Ozone_train)
+RSS = sum((predict(ozone_pm, Ozone[-train,])-Ozone[-train,"maxoz"])^2)
+RSE = sqrt(RSS/(nrow(Ozone[-train,])-(ncol(Ozone_train)-1)-1)) 
+@
+Cross Validation identitifed \Sexpr{d[poly.cv.error == min(poly.cv.error)]} as the degree of polynomial best suited for predicting Max Ozone. The test Residual Standard Error is \Sexpr{RSE}.
+
+\section*{Exercise 3}
+<<>>=
+library(splines)
+RSE = 2:40
+for(i in 2:40){
+  ozone_smoothing.splines = smooth.spline(Ozone_train$time, 
+                                          Ozone_train$maxoz, df = i)
+   RSS = sum((predict(ozone_smoothing.splines, 
+                     Ozone[-train,"time"])$y-Ozone[-train,"maxoz"])^2)
+   RSE[i-1] = sqrt(RSS/(nrow(Ozone[-train,])-(ncol(Ozone_train)-1)-1))
+}
+plot(2:40, RSE, xlab = "degrees of freedom", type = "b")
+
+
+points((which.min(RSE)+1),
+       RSE[which.min(RSE)],
+       col="red",cex=2,pch=20)
+@
+Using the Validation set approach, a smooth spline with \Sexpr{(which.min(RSE)+1)} degrees of freedom is best suited for predicting Max Ozone. The test Residual Standard Error at \Sexpr{(which.min(RSE)+1)} degrees of freedom is \Sexpr{RSE[which.min(RSE)]}. It's interesting to see such a sudden drop in RSE frome 2 to \Sexpr{(which.min(RSE)+1)} degrees of freedom, but after-wards, a wave like structure occur. I wondering if more than 40 degrees of freedom were explored, if the wave would just continue.
+\section*{Exercise 4}
+<<>>=
+library(leaps)
+ozone_best_subset = regsubsets(maxoz~.,Ozone_train[,c("maxoz","pressh","wind","hum",
+                  "temp1","temp2","inverh","pressg","invert","vis")])
+plot(summary(ozone_best_subset)$bic ,
+     xlab="Number of Variables ",ylab="BIC", type='l')
+points(which.min(summary(ozone_best_subset)$bic),
+       summary(ozone_best_subset)$bic[which.min(summary(ozone_best_subset)$bic)],
+       col="red",cex=2,pch=20)
+model = coef(ozone_best_subset ,which.min(summary(ozone_best_subset)$bic))[-1]
+
+
+best_oz_model = glm(maxoz~., Ozone_train[, c(4, which(names(Ozone) %in% names(model)))], family = "gaussian")
+
+RSS = sum((predict(best_oz_model, Ozone[-train, which(names(Ozone) %in% names(model))])-Ozone[-train,4])^2)
+RSE = sqrt(RSS/(nrow(Ozone[-train,])-(ncol(Ozone_train)-1)-1)) 
+
+@
+Based in the plot, the subset with the losest BIC is at \Sexpr{which.min(summary(ozone_best_subset)$bic)} Best subset selection identified a model with the coefficients: \Sexpr{paste(names(model), collapse=",")} as the best performing model based on BIC. The model was then used to create a glm object, with equivilant coefficients: \Sexpr{paste(coef(best_oz_model)[-1], collapse=",")} with a test RSE of \Sexpr{RSE}
+\section*{Exercise 5}
+<<>>=
+library(glmnet)
+grid = 10^seq(10,-2,length=100)
+x = model.matrix(maxoz~.,Ozone)[,-1]
+y = Ozone$maxoz
+Ozone_lasso = glmnet(x[train ,], y[train], alpha = 1, lambda = grid)
+cv.out=cv.glmnet(x[train ,],y[train],alpha=1)
+plot(cv.out)
+bestlam=cv.out$lambda.min
+
+
+RSS = sum((predict(Ozone_lasso,s=bestlam,
+                              newx=x[-train,])-Ozone[-train, "maxoz"])^2)
+RSE = sqrt(RSS/(nrow(Ozone[-train,])-(ncol(Ozone_train)-1)-1))
+
+out=glmnet(x[train ,],y[train],alpha=1,lambda=grid)
+lasso.coef=predict(out,type="coefficients",s=bestlam)
+lasso.coef[lasso.coef[,1]!=0,]
+@
+The best parameter identitified was $\lambda = \Sexpr{bestlam}$
+\section*{Exercise 6}
+\subsection*{bagging}
+<<>>=
+library(tree)
+@
+\subsection*{boosting}
+<<>>=
+library(gbm)
+@
+\subsection*{Random Forests}
+<<>>=
+library(randomForest)
+
+@
+\section*{Bonus}
+<<>>=
+
+@
+\section*{Exercise 7}
+<<fig.show='hold'>>=
+hepatitis <- read.csv("hepatitis.data", header=FALSE, na.strings = "?")
+
+training = sample(nrow(hepatitis), 105)
+
+hep_train = hepatitis[training,]
+
+
+hep_scale = scale(hep_train)
+hc.out=hclust(dist(hep_scale),  method="average")
+hc.clusters=cutree(hc.out,2)
+table(hc.clusters,hep_train$V1)
+plot(hc.out, labels=hepatitis[training,1])
+
+hc.out=hclust(dist(hep_scale),  method="complete")
+hc.clusters=cutree(hc.out,2)
+table(hc.clusters,hep_train$V1)
+plot(hc.out, labels=hepatitis[training,1])
+
+hc.out=hclust(dist(hep_scale),  method="single")
+hc.clusters=cutree(hc.out,2)
+table(hc.clusters,hep_train$V1)
+plot(hc.out, labels=hepatitis[training,1])
+@
+
+<<>>=
+hepatitis$V1 = as.factor(hepatitis$V1-1)
+hep_train = hepatitis[training,]
+
+
+hep_boost = gbm(V1~.,data = hep_train, distribution = "multinomial", n.trees=1000)
+yhat.boost=as.data.frame(predict(hep_boost,newdata=hepatitis[-training,], n.trees=1000,  type = "response"))
+boot_results = 1:50
+boot_results[yhat.boost[,1]>yhat.boost[,2]]=0
+boot_results[yhat.boost[,2]>yhat.boost[,1]]=1
+
+mean(boot_results != hepatitis$V1[-training])
+
+table(boot_results, hepatitis$V1[-training])
+@
+
+<<>>=
+hep_tree = tree(formula = V1 ~ ., data = hep_train)
+summary(hep_tree)
+plot(hep_tree)
+text(hep_tree ,pretty =0)
+
+tree_pred = predict(hep_tree, hepatitis[-training,], type = "class")
+mean(tree_pred != hepatitis[-training,1])
+
+table(tree_pred, hepatitis[-training,1])
+@
+
+<<>>=
+mapply(function(x){sum(is.na(x))}, hepatitis[,-1])
+
+
+x = model.matrix(V1~V2+V3+V5+V20,hepatitis)[,-1]
+y = as.numeric(hepatitis$V1)
+hep_lasso = glmnet(x[training,],y[training], family = "binomial",alpha=1, lambda=grid)
+
+cv.out=cv.glmnet(x[training ,],y[training],alpha=1)
+plot(cv.out)
+bestlam=cv.out$lambda.min
+lasso.pred=as.numeric(predict(hep_lasso,s=bestlam ,newx=x[-training,], type = "class")[,1])
+
+mean(lasso.pred != y[-training])
+
+table(lasso.pred, y[-training])
+
+
+out=glmnet(x,y,alpha=1,lambda=grid)
+lasso.coef=predict(out,type="coefficients",s=bestlam)
+lasso.coef
+@
+
+\end{document}
