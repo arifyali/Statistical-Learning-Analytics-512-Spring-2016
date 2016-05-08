@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  5 MAY 2016 09:33
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  7 MAY 2016 20:47
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -413,167 +413,182 @@ Package color Info: Redefining color shadecolor on input line 69.
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 71.
 Package color Info: Redefining color shadecolor on input line 79.
-Package color Info: Redefining color shadecolor on input line 93.
-LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 98.
+Package color Info: Redefining color shadecolor on input line 94.
+LaTeX Font Info:    Try loading font information for OMS+cmtt on input line 99.
 
 
 (/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/omscmtt.fd
 File: omscmtt.fd 
 )
 LaTeX Font Info:    Font shape `OMS/cmtt/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 98.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 99.
 
 <figure/unnamed-chunk-4-1.pdf, id=1, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-4-1.pdf Graphic file (type pdf)
 
 <use figure/unnamed-chunk-4-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-4-1.pdf used on input line 105.
+Package pdftex.def Info: figure/unnamed-chunk-4-1.pdf used on input line 106.
 (pdftex.def)             Requested size: 187.89914pt x 187.90196pt.
+ [1
 
-Overfull \hbox (2.74086pt too wide) in paragraph at lines 107--107
+{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./figur
+e/unnamed-chunk-4-1.pdf>]
+Overfull \hbox (2.74086pt too wide) in paragraph at lines 108--108
 [][]\OT1/cmtt/m/n/10 ozone_pm[] []=[] []lm[][](maxoz[][]~[][]poly[][](time,d[po
 ly.cv.error[] []==[] []min[][](poly.cv.error)]),[] []data[] []= Ozone_train)[][
 ] 
  []
 
-[1
-
-{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./figur
-e/unnamed-chunk-4-1.pdf>]
-Package color Info: Redefining color shadecolor on input line 117.
-
+Package color Info: Redefining color shadecolor on input line 118.
 <figure/unnamed-chunk-5-1.pdf, id=16, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-5-1.pdf Graphic file (type pdf)
 
 <use figure/unnamed-chunk-5-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-5-1.pdf used on input line 136.
+Package pdftex.def Info: figure/unnamed-chunk-5-1.pdf used on input line 138.
 (pdftex.def)             Requested size: 187.89914pt x 187.90196pt.
-Package color Info: Redefining color shadecolor on input line 142.
- [2 <./figure/unnamed-chunk-5-1.pdf>]
+Package color Info: Redefining color shadecolor on input line 144.
+
+Overfull \hbox (13.24077pt too wide) in paragraph at lines 147--147
+[][]\OT1/cmtt/m/n/10 ozone_best_subset[] []=[] []regsubsets[][](maxoz[][]~[][].
+,[][]na.omit[][](Ozone_train[,[][]c[][]([][]"maxoz"[][],[][]"pressh"[][],[][]"w
+ind"[][],[][]"hum"[][],[][] 
+ []
+
+[2 <./figure/unnamed-chunk-5-1.pdf>]
 <figure/unnamed-chunk-6-1.pdf, id=25, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-6-1.pdf Graphic file (type pdf)
 
 <use figure/unnamed-chunk-6-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-6-1.pdf used on input line 154.
+Package pdftex.def Info: figure/unnamed-chunk-6-1.pdf used on input line 156.
 (pdftex.def)             Requested size: 187.89914pt x 187.90196pt.
 
-Overfull \hbox (102.48999pt too wide) in paragraph at lines 159--159
-[][]\OT1/cmtt/m/n/10 best_oz_model[] []=[] []glm[][](maxoz[][]~[][]., Ozone_tra
-in[,[] []c[][]([][]4[][],[] []which[][]([][]names[][](Ozone)[] []%in%[] []names
-[][](model)))],[] []family[] []=[] []"gaussian"[][])[][] 
+Overfull \hbox (149.73958pt too wide) in paragraph at lines 161--161
+[][]\OT1/cmtt/m/n/10 best_oz_model[] []=[] []glm[][](maxoz[][]~[][].,[] []na.om
+it[][](Ozone_train[,[] []c[][]([][]4[][],[] []which[][]([][]names[][](Ozone)[] 
+[]%in%[] []names[][](model)))]),[] []family[] []=[] []"gaussian"[][])[][] 
  []
 
-
-Overfull \hbox (91.99008pt too wide) in paragraph at lines 161--161
-[][]\OT1/cmtt/m/n/10 RSS[] []=[] []sum[][](([][]predict[][](best_oz_model, Ozon
-e[[][]-[][]train,[] []which[][]([][]names[][](Ozone)[] []%in%[] []names[][](mod
-el))])[][]-[][]Ozone[[][]-[][]train,[][]4[][]])[][]^[][]2[][])[][] 
- []
-
-Package color Info: Redefining color shadecolor on input line 169.
-<figure/unnamed-chunk-7-1.pdf, id=26, 505.89pt x 505.89pt>
+Package color Info: Redefining color shadecolor on input line 173.
+[3 <./figure/unnamed-chunk-6-1.pdf>]
+<figure/unnamed-chunk-7-1.pdf, id=35, 505.89pt x 505.89pt>
 File: figure/unnamed-chunk-7-1.pdf Graphic file (type pdf)
 
 <use figure/unnamed-chunk-7-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-7-1.pdf used on input line 184.
+Package pdftex.def Info: figure/unnamed-chunk-7-1.pdf used on input line 188.
 (pdftex.def)             Requested size: 187.89914pt x 187.90196pt.
- [3 <./figure/unnamed-chunk-6-1.pdf>]
-LaTeX Font Info:    Try loading font information for U+msa on input line 205.
+LaTeX Font Info:    Try loading font information for U+msa on input line 203.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 205.
+LaTeX Font Info:    Try loading font information for U+msb on input line 203.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Try loading font information for U+rsfs on input line 205.
+LaTeX Font Info:    Try loading font information for U+rsfs on input line 203.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/jknapltx/ursfs.fd
 File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 )
-Package color Info: Redefining color shadecolor on input line 208.
+Package color Info: Redefining color shadecolor on input line 207.
  [4 <./figure/unnamed-chunk-7-1.pdf>]
 Package color Info: Redefining color shadecolor on input line 226.
 
-<figure/unnamed-chunk-10-1.pdf, id=45, 505.89pt x 505.89pt>
-File: figure/unnamed-chunk-10-1.pdf Graphic file (type pdf)
+Overfull \hbox (70.99026pt too wide) in paragraph at lines 233--233
+[][]\OT1/cmtt/m/n/10 Ozone_boost[][]=[][]gbm[][](maxoz[][]~[][].,[][]data[][]=O
+zone[train,],[][]distribution[][]=[] []"gaussian"[][],[] []n.trees[][]=[][]5000
+[][],[] []interaction.depth[][]=[][]4[][])[][] 
+ []
 
-<use figure/unnamed-chunk-10-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-10-1.pdf used on input line 276.
+
+Overfull \hbox (23.74068pt too wide) in paragraph at lines 236--236
+[][]\OT1/cmtt/m/n/10 RSS[] []=[] []sum[][](([][]predict[][](Ozone_boost,[][]new
+data[][]=Ozone[[][]-[][]train,],[] []n.trees[][]=[][]5000[][])[][]-[][]Ozone[[]
+[]-[][]train,[][]"maxoz"[][]])[][]^[][]2[][])[][] 
+ []
+
+Package color Info: Redefining color shadecolor on input line 244.
+Package color Info: Redefining color shadecolor on input line 257.
+[5] <figure/unnamed-chunk-12-1.pdf, id=48, 505.89pt x 505.89pt>
+File: figure/unnamed-chunk-12-1.pdf Graphic file (type pdf)
+
+<use figure/unnamed-chunk-12-1.pdf>
+Package pdftex.def Info: figure/unnamed-chunk-12-1.pdf used on input line 307.
 (pdftex.def)             Requested size: 187.89914pt x 187.90196pt.
 
-<figure/unnamed-chunk-10-2.pdf, id=46, 505.89pt x 505.89pt>
-File: figure/unnamed-chunk-10-2.pdf Graphic file (type pdf)
+<figure/unnamed-chunk-12-2.pdf, id=49, 505.89pt x 505.89pt>
+File: figure/unnamed-chunk-12-2.pdf Graphic file (type pdf)
 
-<use figure/unnamed-chunk-10-2.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-10-2.pdf used on input line 277.
+<use figure/unnamed-chunk-12-2.pdf>
+Package pdftex.def Info: figure/unnamed-chunk-12-2.pdf used on input line 308.
 (pdftex.def)             Requested size: 187.89914pt x 187.90196pt.
 
-<figure/unnamed-chunk-10-3.pdf, id=47, 505.89pt x 505.89pt>
-File: figure/unnamed-chunk-10-3.pdf Graphic file (type pdf)
+<figure/unnamed-chunk-12-3.pdf, id=50, 505.89pt x 505.89pt>
+File: figure/unnamed-chunk-12-3.pdf Graphic file (type pdf)
 
-<use figure/unnamed-chunk-10-3.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-10-3.pdf used on input line 278.
+<use figure/unnamed-chunk-12-3.pdf>
+Package pdftex.def Info: figure/unnamed-chunk-12-3.pdf used on input line 309.
 (pdftex.def)             Requested size: 187.89914pt x 187.90196pt.
 
-Overfull \hbox (113.38683pt too wide) in paragraph at lines 276--279
+Overfull \hbox (113.38683pt too wide) in paragraph at lines 307--310
 [][] [] [] 
  []
 
-Package color Info: Redefining color shadecolor on input line 283.
-[5]
-Overfull \hbox (97.24004pt too wide) in paragraph at lines 290--290
+Package color Info: Redefining color shadecolor on input line 314.
+
+Overfull \hbox (97.24004pt too wide) in paragraph at lines 321--321
 [][]\OT1/cmtt/m/n/10 yhat.boost[][]=[][]as.data.frame[][]([][]predict[][](hep_b
 oost,[][]newdata[][]=hepatitis[[][]-[][]training,],[] []n.trees[][]=[][]1000[][
 ],[]  []type[] []=[] []"response"[][]))[][] 
  []
 
-Package color Info: Redefining color shadecolor on input line 313.
-<figure/unnamed-chunk-12-1.pdf, id=51, 505.89pt x 505.89pt>
-File: figure/unnamed-chunk-12-1.pdf Graphic file (type pdf)
+[6 <./figure/unnamed-chunk-12-1.pdf> <./figure/unnamed-chunk-12-2.pdf> <./figur
+e/unnamed-chunk-12-3.pdf>]
+Package color Info: Redefining color shadecolor on input line 344.
 
-<use figure/unnamed-chunk-12-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-12-1.pdf used on input line 333.
+<figure/unnamed-chunk-14-1.pdf, id=72, 505.89pt x 505.89pt>
+File: figure/unnamed-chunk-14-1.pdf Graphic file (type pdf)
+
+<use figure/unnamed-chunk-14-1.pdf>
+Package pdftex.def Info: figure/unnamed-chunk-14-1.pdf used on input line 365.
 (pdftex.def)             Requested size: 187.89914pt x 187.90196pt.
- [6 <./figure/unnamed-chunk-10-1.pdf> <./figure/unnamed-chunk-10-2.pdf> <./figu
-re/unnamed-chunk-10-3.pdf>]
-Package color Info: Redefining color shadecolor on input line 354.
+ [7 <./figure/unnamed-chunk-14-1.pdf>]
+Package color Info: Redefining color shadecolor on input line 386.
 
-<figure/unnamed-chunk-13-1.pdf, id=73, 505.89pt x 505.89pt>
-File: figure/unnamed-chunk-13-1.pdf Graphic file (type pdf)
+<figure/unnamed-chunk-15-1.pdf, id=82, 505.89pt x 505.89pt>
+File: figure/unnamed-chunk-15-1.pdf Graphic file (type pdf)
 
-<use figure/unnamed-chunk-13-1.pdf>
-Package pdftex.def Info: figure/unnamed-chunk-13-1.pdf used on input line 373.
+<use figure/unnamed-chunk-15-1.pdf>
+Package pdftex.def Info: figure/unnamed-chunk-15-1.pdf used on input line 405.
 (pdftex.def)             Requested size: 187.89914pt x 187.90196pt.
- [7 <./figure/unnamed-chunk-12-1.pdf>]
-Overfull \hbox (7.99081pt too wide) in paragraph at lines 376--376
+
+Overfull \hbox (7.99081pt too wide) in paragraph at lines 408--408
 [][]\OT1/cmtt/m/n/10 lasso.pred[][]=[][]as.numeric[][]([][]predict[][](hep_lass
 o,[][]s[][]=bestlam ,[][]newx[][]=x[[][]-[][]training,],[] []type[] []=[] []"cl
 ass"[][])[,[][]1[][]])[][] 
  []
 
-[8 <./figure/unnamed-chunk-13-1.pdf>] (./Anly512FinalExam.aux) ) 
+[8 <./figure/unnamed-chunk-15-1.pdf>] [9] (./Anly512FinalExam.aux) ) 
 Here is how much of TeX's memory you used:
- 4770 strings out of 493089
- 67992 string characters out of 6134842
- 134884 words of memory out of 5000000
- 8157 multiletter control sequences out of 15000+600000
- 7381 words of font info for 31 fonts, out of 8000000 for 9000
+ 4772 strings out of 493089
+ 68021 string characters out of 6134842
+ 136884 words of memory out of 5000000
+ 8159 multiletter control sequences out of 15000+600000
+ 7986 words of font info for 33 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,5n,32p,533b,289s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/tex
-live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texl
-ive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb></usr/local/texl
-ive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texli
-ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive
-/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/
-2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on Anly512FinalExam.pdf (8 pages, 144005 bytes).
+ 38i,5n,32p,605b,289s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local
+/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/
+texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmitt10.pfb></usr/local/
+texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/t
+exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/tex
+live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texl
+ive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on Anly512FinalExam.pdf (9 pages, 147901 bytes).
 PDF statistics:
- 112 PDF objects out of 1000 (max. 8388607)
- 77 compressed objects within 1 object stream
+ 115 PDF objects out of 1000 (max. 8388607)
+ 79 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  46 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -82,12 +82,13 @@ May 12, 2016\\
 \hlkwd{names}\hlstd{(Ozone)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"mo"}\hlstd{,}\hlstr{"day"}\hlstd{,}\hlstr{"wday"}\hlstd{,}\hlstr{"maxoz"}\hlstd{,}\hlstr{"pressh"}\hlstd{,}\hlstr{"wind"}\hlstd{,}\hlstr{"hum"}\hlstd{,}
                   \hlstr{"temp1"}\hlstd{,}\hlstr{"temp2"}\hlstd{,}\hlstr{"inverh"}\hlstd{,}\hlstr{"pressg"}\hlstd{,}\hlstr{"invert"}\hlstd{,}\hlstr{"vis"}\hlstd{)}
 \hlstd{Ozone}\hlopt{$}\hlstd{time} \hlkwb{=} \hlnum{1}\hlopt{:}\hlnum{366}
-\hlstd{Ozone} \hlkwb{=} \hlkwd{na.omit}\hlstd{(Ozone)}
+\hlstd{Ozone} \hlkwb{=} \hlstd{Ozone[}\hlopt{!}\hlkwd{is.na}\hlstd{(Ozone}\hlopt{$}\hlstd{maxoz),]}
 \hlstd{train} \hlkwb{=} \hlkwd{sample}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone),} \hlkwd{nrow}\hlstd{(Ozone)}\hlopt{*}\hlnum{.70}\hlstd{)}
 \hlstd{Ozone_train} \hlkwb{=} \hlstd{Ozone[train,]}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
+Any observations were maxoz is na is dropped because, if there is no response variable, then the observation is not useful because there is no way to benchmark the values.
 \section*{Exercise 2}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -106,11 +107,11 @@ May 12, 2016\\
 \begin{kframe}\begin{alltt}
 \hlstd{ozone_pm} \hlkwb{=} \hlkwd{lm}\hlstd{(maxoz}\hlopt{~}\hlkwd{poly}\hlstd{(time,d[poly.cv.error} \hlopt{==} \hlkwd{min}\hlstd{(poly.cv.error)]),} \hlkwc{data} \hlstd{= Ozone_train)}
 \hlstd{RSS} \hlkwb{=} \hlkwd{sum}\hlstd{((}\hlkwd{predict}\hlstd{(ozone_pm, Ozone[}\hlopt{-}\hlstd{train,])}\hlopt{-}\hlstd{Ozone[}\hlopt{-}\hlstd{train,}\hlstr{"maxoz"}\hlstd{])}\hlopt{^}\hlnum{2}\hlstd{)}
-\hlstd{RSE} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])}\hlopt{-}\hlstd{(}\hlkwd{ncol}\hlstd{(Ozone_train)}\hlopt{-}\hlnum{1}\hlstd{)}\hlopt{-}\hlnum{1}\hlstd{))}
+\hlstd{RSE} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])))}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-Cross Validation identitifed 3 as the degree of polynomial best suited for predicting Max Ozone. The test Residual Standard Error is 7.0288438.
+Cross Validation identified 7 as the degree of polynomial best suited for predicting Max Ozone. The test Residual Standard Error is 6.7276186.
 
 \section*{Exercise 3}
 \begin{knitrout}
@@ -119,11 +120,12 @@ Cross Validation identitifed 3 as the degree of polynomial best suited for predi
 \hlkwd{library}\hlstd{(splines)}
 \hlstd{RSE} \hlkwb{=} \hlnum{2}\hlopt{:}\hlnum{40}
 \hlkwa{for}\hlstd{(i} \hlkwa{in} \hlnum{2}\hlopt{:}\hlnum{40}\hlstd{)\{}
+
   \hlstd{ozone_smoothing.splines} \hlkwb{=} \hlkwd{smooth.spline}\hlstd{(Ozone_train}\hlopt{$}\hlstd{time,}
                                           \hlstd{Ozone_train}\hlopt{$}\hlstd{maxoz,} \hlkwc{df} \hlstd{= i)}
    \hlstd{RSS} \hlkwb{=} \hlkwd{sum}\hlstd{((}\hlkwd{predict}\hlstd{(ozone_smoothing.splines,}
                      \hlstd{Ozone[}\hlopt{-}\hlstd{train,}\hlstr{"time"}\hlstd{])}\hlopt{$}\hlstd{y}\hlopt{-}\hlstd{Ozone[}\hlopt{-}\hlstd{train,}\hlstr{"maxoz"}\hlstd{])}\hlopt{^}\hlnum{2}\hlstd{)}
-   \hlstd{RSE[i}\hlopt{-}\hlnum{1}\hlstd{]} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])}\hlopt{-}\hlstd{(}\hlkwd{ncol}\hlstd{(Ozone_train)}\hlopt{-}\hlnum{1}\hlstd{)}\hlopt{-}\hlnum{1}\hlstd{))}
+   \hlstd{RSE[i}\hlopt{-}\hlnum{1}\hlstd{]} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])))}
 \hlstd{\}}
 \hlkwd{plot}\hlstd{(}\hlnum{2}\hlopt{:}\hlnum{40}\hlstd{, RSE,} \hlkwc{xlab} \hlstd{=} \hlstr{"degrees of freedom"}\hlstd{,} \hlkwc{type} \hlstd{=} \hlstr{"b"}\hlstd{)}
 
@@ -136,14 +138,14 @@ Cross Validation identitifed 3 as the degree of polynomial best suited for predi
 \includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-5-1} 
 
 \end{knitrout}
-Using the Validation set approach, a smooth spline with 5 degrees of freedom is best suited for predicting Max Ozone. The test Residual Standard Error at 5 degrees of freedom is 6.8199769. It's interesting to see such a sudden drop in RSE frome 2 to 5 degrees of freedom, but after-wards, a wave like structure occur. I wondering if more than 40 degrees of freedom were explored, if the wave would just continue.
+Using the Validation set approach, a smooth spline with 40 degrees of freedom is best suited for predicting Max Ozone. The test Residual Standard Error at 40 degrees of freedom is 5.7442268. It's interesting to see such a sudden drop in RSE from 2 to 40 degrees of freedom, but after-wards, a wave like structure occur. I wondering if more than 40 degrees of freedom were explored, if the wave would just continue.
 \section*{Exercise 4}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
 \hlkwd{library}\hlstd{(leaps)}
-\hlstd{ozone_best_subset} \hlkwb{=} \hlkwd{regsubsets}\hlstd{(maxoz}\hlopt{~}\hlstd{.,Ozone_train[,}\hlkwd{c}\hlstd{(}\hlstr{"maxoz"}\hlstd{,}\hlstr{"pressh"}\hlstd{,}\hlstr{"wind"}\hlstd{,}\hlstr{"hum"}\hlstd{,}
-                  \hlstr{"temp1"}\hlstd{,}\hlstr{"temp2"}\hlstd{,}\hlstr{"inverh"}\hlstd{,}\hlstr{"pressg"}\hlstd{,}\hlstr{"invert"}\hlstd{,}\hlstr{"vis"}\hlstd{)])}
+\hlstd{ozone_best_subset} \hlkwb{=} \hlkwd{regsubsets}\hlstd{(maxoz}\hlopt{~}\hlstd{.,}\hlkwd{na.omit}\hlstd{(Ozone_train[,}\hlkwd{c}\hlstd{(}\hlstr{"maxoz"}\hlstd{,}\hlstr{"pressh"}\hlstd{,}\hlstr{"wind"}\hlstd{,}\hlstr{"hum"}\hlstd{,}
+                  \hlstr{"temp1"}\hlstd{,}\hlstr{"temp2"}\hlstd{,}\hlstr{"inverh"}\hlstd{,}\hlstr{"pressg"}\hlstd{,}\hlstr{"invert"}\hlstd{,}\hlstr{"vis"}\hlstd{)]))}
 \hlkwd{plot}\hlstd{(}\hlkwd{summary}\hlstd{(ozone_best_subset)}\hlopt{$}\hlstd{bic ,}
      \hlkwc{xlab}\hlstd{=}\hlstr{"Number of Variables "}\hlstd{,}\hlkwc{ylab}\hlstd{=}\hlstr{"BIC"}\hlstd{,} \hlkwc{type}\hlstd{=}\hlstr{'l'}\hlstd{)}
 \hlkwd{points}\hlstd{(}\hlkwd{which.min}\hlstd{(}\hlkwd{summary}\hlstd{(ozone_best_subset)}\hlopt{$}\hlstd{bic),}
@@ -156,14 +158,16 @@ Using the Validation set approach, a smooth spline with 5 degrees of freedom is 
 \hlstd{model} \hlkwb{=} \hlkwd{coef}\hlstd{(ozone_best_subset ,}\hlkwd{which.min}\hlstd{(}\hlkwd{summary}\hlstd{(ozone_best_subset)}\hlopt{$}\hlstd{bic))[}\hlopt{-}\hlnum{1}\hlstd{]}
 
 
-\hlstd{best_oz_model} \hlkwb{=} \hlkwd{glm}\hlstd{(maxoz}\hlopt{~}\hlstd{., Ozone_train[,} \hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,} \hlkwd{which}\hlstd{(}\hlkwd{names}\hlstd{(Ozone)} \hlopt{%in%} \hlkwd{names}\hlstd{(model)))],} \hlkwc{family} \hlstd{=} \hlstr{"gaussian"}\hlstd{)}
+\hlstd{best_oz_model} \hlkwb{=} \hlkwd{glm}\hlstd{(maxoz}\hlopt{~}\hlstd{.,} \hlkwd{na.omit}\hlstd{(Ozone_train[,} \hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,} \hlkwd{which}\hlstd{(}\hlkwd{names}\hlstd{(Ozone)} \hlopt{%in%} \hlkwd{names}\hlstd{(model)))]),} \hlkwc{family} \hlstd{=} \hlstr{"gaussian"}\hlstd{)}
 
-\hlstd{RSS} \hlkwb{=} \hlkwd{sum}\hlstd{((}\hlkwd{predict}\hlstd{(best_oz_model, Ozone[}\hlopt{-}\hlstd{train,} \hlkwd{which}\hlstd{(}\hlkwd{names}\hlstd{(Ozone)} \hlopt{%in%} \hlkwd{names}\hlstd{(model))])}\hlopt{-}\hlstd{Ozone[}\hlopt{-}\hlstd{train,}\hlnum{4}\hlstd{])}\hlopt{^}\hlnum{2}\hlstd{)}
-\hlstd{RSE} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])}\hlopt{-}\hlstd{(}\hlkwd{ncol}\hlstd{(Ozone_train)}\hlopt{-}\hlnum{1}\hlstd{)}\hlopt{-}\hlnum{1}\hlstd{))}
+\hlstd{Ozone_test_na_omit} \hlkwb{=} \hlkwd{na.omit}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,} \hlkwd{which}\hlstd{(}\hlkwd{names}\hlstd{(Ozone)} \hlopt{%in%} \hlkwd{names}\hlstd{(model))])}
+
+\hlstd{RSS} \hlkwb{=} \hlkwd{sum}\hlstd{((}\hlkwd{predict}\hlstd{(best_oz_model, Ozone_test_na_omit)}\hlopt{-}\hlstd{Ozone_test_na_omit[}\hlopt{-}\hlstd{train,}\hlnum{4}\hlstd{])}\hlopt{^}\hlnum{2}\hlstd{)}
+\hlstd{RSE} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])))}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-Based in the plot, the subset with the losest BIC is at 2 Best subset selection identified a model with the coefficients: hum,temp2 as the best performing model based on BIC. The model was then used to create a glm object, with equivilant coefficients: 0.141338354493428,0.472833174677559 with a test RSE of 5.1263292
+In order to attempt the best subset selection, the test and training observations' response and predictive variables cannot be NA, so na.omit needed to be applied on the datasets. Based in the plot, the subset with the lowest BIC is at 2 Best subset selection identified a model with the coefficients: hum,temp2 as the best performing model based on BIC. The model was then used to create a glm object, with equivalent coefficients: 0.1201742, 0.4491926 with a test RSE of 0
 \section*{Exercise 5}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -174,10 +178,10 @@ Based in the plot, the subset with the losest BIC is at 2 Best subset selection 
 
 {\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: Matrix\\\#\# Loading required package: foreach\\\#\# Loaded glmnet 2.0-2}}\begin{alltt}
 \hlstd{grid} \hlkwb{=} \hlnum{10}\hlopt{^}\hlkwd{seq}\hlstd{(}\hlnum{10}\hlstd{,}\hlopt{-}\hlnum{2}\hlstd{,}\hlkwc{length}\hlstd{=}\hlnum{100}\hlstd{)}
-\hlstd{x} \hlkwb{=} \hlkwd{model.matrix}\hlstd{(maxoz}\hlopt{~}\hlstd{.,Ozone)[,}\hlopt{-}\hlnum{1}\hlstd{]}
-\hlstd{y} \hlkwb{=} \hlstd{Ozone}\hlopt{$}\hlstd{maxoz}
-\hlstd{Ozone_lasso} \hlkwb{=} \hlkwd{glmnet}\hlstd{(x[train ,], y[train],} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{lambda} \hlstd{= grid)}
-\hlstd{cv.out}\hlkwb{=}\hlkwd{cv.glmnet}\hlstd{(x[train ,],y[train],}\hlkwc{alpha}\hlstd{=}\hlnum{1}\hlstd{)}
+\hlstd{x} \hlkwb{=} \hlkwd{model.matrix}\hlstd{(maxoz}\hlopt{~}\hlstd{.,}\hlkwd{na.omit}\hlstd{(Ozone_train))[,}\hlopt{-}\hlnum{1}\hlstd{]}
+\hlstd{y} \hlkwb{=} \hlkwd{na.omit}\hlstd{(Ozone_train)}\hlopt{$}\hlstd{maxoz}
+\hlstd{Ozone_lasso} \hlkwb{=} \hlkwd{glmnet}\hlstd{(x, y,} \hlkwc{alpha} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{lambda} \hlstd{= grid)}
+\hlstd{cv.out}\hlkwb{=}\hlkwd{cv.glmnet}\hlstd{(x,y,}\hlkwc{alpha}\hlstd{=}\hlnum{1}\hlstd{)}
 \hlkwd{plot}\hlstd{(cv.out)}
 \end{alltt}
 \end{kframe}
@@ -187,39 +191,66 @@ Based in the plot, the subset with the losest BIC is at 2 Best subset selection 
 
 
 \hlstd{RSS} \hlkwb{=} \hlkwd{sum}\hlstd{((}\hlkwd{predict}\hlstd{(Ozone_lasso,}\hlkwc{s}\hlstd{=bestlam,}
-                              \hlkwc{newx}\hlstd{=x[}\hlopt{-}\hlstd{train,])}\hlopt{-}\hlstd{Ozone[}\hlopt{-}\hlstd{train,} \hlstr{"maxoz"}\hlstd{])}\hlopt{^}\hlnum{2}\hlstd{)}
-\hlstd{RSE} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])}\hlopt{-}\hlstd{(}\hlkwd{ncol}\hlstd{(Ozone_train)}\hlopt{-}\hlnum{1}\hlstd{)}\hlopt{-}\hlnum{1}\hlstd{))}
+                              \hlkwc{newx}\hlstd{=}\hlkwd{model.matrix}\hlstd{(maxoz}\hlopt{~}\hlstd{.,}\hlkwd{na.omit}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,]))[,}\hlopt{-}\hlnum{1}\hlstd{]}
+                   \hlstd{)}\hlopt{-}\hlkwd{na.omit}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])}\hlopt{$}\hlstd{maxoz)}\hlopt{^}\hlnum{2}\hlstd{)}
+\hlstd{RSE} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])))}
 
-\hlstd{out}\hlkwb{=}\hlkwd{glmnet}\hlstd{(x[train ,],y[train],}\hlkwc{alpha}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{lambda}\hlstd{=grid)}
+\hlstd{out}\hlkwb{=}\hlkwd{glmnet}\hlstd{(x,y,}\hlkwc{alpha}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{lambda}\hlstd{=grid)}
 \hlstd{lasso.coef}\hlkwb{=}\hlkwd{predict}\hlstd{(out,}\hlkwc{type}\hlstd{=}\hlstr{"coefficients"}\hlstd{,}\hlkwc{s}\hlstd{=bestlam)}
-\hlstd{lasso.coef[lasso.coef[,}\hlnum{1}\hlstd{]}\hlopt{!=}\hlnum{0}\hlstd{,]}
 \end{alltt}
-\begin{verbatim}
-##   (Intercept)            mo           hum         temp1         temp2 
-## -1.635775e+01 -1.525592e-01  1.052727e-01  1.040610e-01  3.177951e-01 
-##        inverh        pressg           vis 
-## -3.234902e-04  9.555879e-04 -6.466298e-03
-\end{verbatim}
 \end{kframe}
 \end{knitrout}
-The best parameter identitified was $\lambda = 0.235829$
+The best parameter identified was $\lambda = 0.2348047$ after applying cross validation and using the lambda that obtained the lowest cross validation error. The coefficients, after applying the L1 penalty, were mo, day, hum, temp1, temp2, inverh, vis. The residual squared error was 3.5200735. The result performs better than the best subset selection based on the residual squared error, which is interesting and could indicate that solely looking at the BIC for best subset is not the best strategy.   
 \section*{Exercise 6}
+\subsection*{bagging}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlkwd{library}\hlstd{(tree)}
+\hlkwd{library}\hlstd{(randomForest)}
+\end{alltt}
+
+
+{\ttfamily\noindent\itshape\color{messagecolor}{\#\# randomForest 4.6-12\\\#\# Type rfNews() to see new features/changes/bug fixes.}}\begin{alltt}
+\hlstd{Ozone_clean_train} \hlkwb{=} \hlkwd{na.omit}\hlstd{(Ozone_train)}
+\hlstd{Ozone_clean_test} \hlkwb{=} \hlkwd{na.omit}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])}
+
+\hlstd{Ozone_bagging} \hlkwb{=} \hlkwd{randomForest}\hlstd{(maxoz}\hlopt{~}\hlstd{.,Ozone_clean_train,} \hlkwc{mtry} \hlstd{=} \hlkwd{ncol}\hlstd{(Ozone_train)}\hlopt{-}\hlnum{1}\hlstd{)}
+
+\hlstd{RSS} \hlkwb{=} \hlkwd{sum}\hlstd{((}\hlkwd{predict}\hlstd{(Ozone_bagging ,}\hlkwc{newdata}\hlstd{=Ozone_clean_test)}\hlopt{-}\hlstd{(Ozone_clean_test}\hlopt{$}\hlstd{maxoz))}\hlopt{^}\hlnum{2}\hlstd{)}
+\hlstd{RSE} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\subsection*{boosting}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
 \hlkwd{library}\hlstd{(gbm)}
 \end{alltt}
 
 
 {\ttfamily\noindent\itshape\color{messagecolor}{\#\# Loading required package: survival\\\#\# \\\#\# Attaching package: 'survival'\\\#\# \\\#\# The following object is masked from 'package:boot':\\\#\# \\\#\#\ \ \ \  aml\\\#\# \\\#\# Loading required package: lattice\\\#\# \\\#\# Attaching package: 'lattice'\\\#\# \\\#\# The following object is masked from 'package:boot':\\\#\# \\\#\#\ \ \ \  melanoma\\\#\# \\\#\# Loading required package: parallel\\\#\# Loaded gbm 2.1.1}}\begin{alltt}
-\hlkwd{library}\hlstd{(randomForest)}
+\hlstd{Ozone_boost}\hlkwb{=}\hlkwd{gbm}\hlstd{(maxoz}\hlopt{~}\hlstd{.,}\hlkwc{data}\hlstd{=Ozone[train,],}\hlkwc{distribution}\hlstd{=} \hlstr{"gaussian"}\hlstd{,} \hlkwc{n.trees}\hlstd{=}\hlnum{5000}\hlstd{,} \hlkwc{interaction.depth}\hlstd{=}\hlnum{4}\hlstd{)}
+
+
+\hlstd{RSS} \hlkwb{=} \hlkwd{sum}\hlstd{((}\hlkwd{predict}\hlstd{(Ozone_boost,}\hlkwc{newdata}\hlstd{=Ozone[}\hlopt{-}\hlstd{train,],} \hlkwc{n.trees}\hlstd{=}\hlnum{5000}\hlstd{)}\hlopt{-}\hlstd{Ozone[}\hlopt{-}\hlstd{train,}\hlstr{"maxoz"}\hlstd{])}\hlopt{^}\hlnum{2}\hlstd{)}
+
+\hlstd{RSE} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])))}
 \end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# randomForest 4.6-12\\\#\# Type rfNews() to see new features/changes/bug fixes.}}\end{kframe}
+\end{kframe}
 \end{knitrout}
-\section*{Bonus}
+\subsection*{Random Forests}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{Ozone_rf} \hlkwb{=} \hlkwd{randomForest}\hlstd{(maxoz}\hlopt{~}\hlstd{.,Ozone_clean_train,} \hlkwc{mtry} \hlstd{= (}\hlkwd{ncol}\hlstd{(Ozone_train)}\hlopt{-}\hlnum{1}\hlstd{)}\hlopt{/}\hlnum{3}\hlstd{)}
+
+\hlstd{RSS} \hlkwb{=} \hlkwd{sum}\hlstd{((}\hlkwd{predict}\hlstd{(Ozone_rf ,}\hlkwc{newdata}\hlstd{=Ozone_clean_test)}\hlopt{-}\hlstd{(Ozone_clean_test}\hlopt{$}\hlstd{maxoz))}\hlopt{^}\hlnum{2}\hlstd{)}
+\hlstd{RSE} \hlkwb{=} \hlkwd{sqrt}\hlstd{(RSS}\hlopt{/}\hlstd{(}\hlkwd{nrow}\hlstd{(Ozone[}\hlopt{-}\hlstd{train,])))}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\subsection*{Bonus}
 
 \section*{Exercise 7}
 \begin{knitrout}
@@ -240,8 +271,8 @@ The best parameter identitified was $\lambda = 0.235829$
 \begin{verbatim}
 ##            
 ## hc.clusters  1  2
-##           1 21 83
-##           2  0  1
+##           1 16 87
+##           2  2  0
 \end{verbatim}
 \begin{alltt}
 \hlkwd{plot}\hlstd{(hc.out,} \hlkwc{labels}\hlstd{=hepatitis[training,}\hlnum{1}\hlstd{])}
@@ -253,8 +284,8 @@ The best parameter identitified was $\lambda = 0.235829$
 \begin{verbatim}
 ##            
 ## hc.clusters  1  2
-##           1 12 83
-##           2  9  1
+##           1 16 85
+##           2  2  2
 \end{verbatim}
 \begin{alltt}
 \hlkwd{plot}\hlstd{(hc.out,} \hlkwc{labels}\hlstd{=hepatitis[training,}\hlnum{1}\hlstd{])}
@@ -266,16 +297,16 @@ The best parameter identitified was $\lambda = 0.235829$
 \begin{verbatim}
 ##            
 ## hc.clusters  1  2
-##           1 21 83
-##           2  0  1
+##           1 17 87
+##           2  1  0
 \end{verbatim}
 \begin{alltt}
 \hlkwd{plot}\hlstd{(hc.out,} \hlkwc{labels}\hlstd{=hepatitis[training,}\hlnum{1}\hlstd{])}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-10-1} 
-\includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-10-2} 
-\includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-10-3} 
+\includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-12-1} 
+\includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-12-2} 
+\includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-12-3} 
 
 \end{knitrout}
 
@@ -295,7 +326,7 @@ The best parameter identitified was $\lambda = 0.235829$
 \hlkwd{mean}\hlstd{(boot_results} \hlopt{!=} \hlstd{hepatitis}\hlopt{$}\hlstd{V1[}\hlopt{-}\hlstd{training])}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.2
+## [1] 0.26
 \end{verbatim}
 \begin{alltt}
 \hlkwd{table}\hlstd{(boot_results, hepatitis}\hlopt{$}\hlstd{V1[}\hlopt{-}\hlstd{training])}
@@ -303,8 +334,8 @@ The best parameter identitified was $\lambda = 0.235829$
 \begin{verbatim}
 ##             
 ## boot_results  0  1
-##            0  1  0
-##            1 10 39
+##            0  2  1
+##            1 12 35
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -312,6 +343,7 @@ The best parameter identitified was $\lambda = 0.235829$
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
+\hlkwd{library}\hlstd{(tree)}
 \hlstd{hep_tree} \hlkwb{=} \hlkwd{tree}\hlstd{(}\hlkwc{formula} \hlstd{= V1} \hlopt{~} \hlstd{.,} \hlkwc{data} \hlstd{= hep_train)}
 \hlkwd{summary}\hlstd{(hep_tree)}
 \end{alltt}
@@ -320,23 +352,23 @@ The best parameter identitified was $\lambda = 0.235829$
 ## Classification tree:
 ## tree(formula = V1 ~ ., data = hep_train)
 ## Variables actually used in tree construction:
-## [1] "V19" "V2" 
-## Number of terminal nodes:  3 
-## Residual mean deviance:  0.1834 = 9.535 / 52 
-## Misclassification error rate: 0.03636 = 2 / 55
+## [1] "V15" "V18" "V2" 
+## Number of terminal nodes:  5 
+## Residual mean deviance:  0.2529 = 12.14 / 48 
+## Misclassification error rate: 0.0566 = 3 / 53
 \end{verbatim}
 \begin{alltt}
 \hlkwd{plot}\hlstd{(hep_tree)}
 \hlkwd{text}\hlstd{(hep_tree ,}\hlkwc{pretty} \hlstd{=}\hlnum{0}\hlstd{)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-12-1} 
+\includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-14-1} 
 \begin{kframe}\begin{alltt}
 \hlstd{tree_pred} \hlkwb{=} \hlkwd{predict}\hlstd{(hep_tree, hepatitis[}\hlopt{-}\hlstd{training,],} \hlkwc{type} \hlstd{=} \hlstr{"class"}\hlstd{)}
 \hlkwd{mean}\hlstd{(tree_pred} \hlopt{!=} \hlstd{hepatitis[}\hlopt{-}\hlstd{training,}\hlnum{1}\hlstd{])}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.16
+## [1] 0.22
 \end{verbatim}
 \begin{alltt}
 \hlkwd{table}\hlstd{(tree_pred, hepatitis[}\hlopt{-}\hlstd{training,}\hlnum{1}\hlstd{])}
@@ -344,8 +376,8 @@ The best parameter identitified was $\lambda = 0.235829$
 \begin{verbatim}
 ##          
 ## tree_pred  0  1
-##         0  5  2
-##         1  6 37
+##         0  8  5
+##         1  6 31
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -370,7 +402,7 @@ The best parameter identitified was $\lambda = 0.235829$
 \hlkwd{plot}\hlstd{(cv.out)}
 \end{alltt}
 \end{kframe}
-\includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-13-1} 
+\includegraphics[width=0.40\linewidth]{figure/unnamed-chunk-15-1} 
 \begin{kframe}\begin{alltt}
 \hlstd{bestlam}\hlkwb{=}\hlstd{cv.out}\hlopt{$}\hlstd{lambda.min}
 \hlstd{lasso.pred}\hlkwb{=}\hlkwd{as.numeric}\hlstd{(}\hlkwd{predict}\hlstd{(hep_lasso,}\hlkwc{s}\hlstd{=bestlam ,}\hlkwc{newx}\hlstd{=x[}\hlopt{-}\hlstd{training,],} \hlkwc{type} \hlstd{=} \hlstr{"class"}\hlstd{)[,}\hlnum{1}\hlstd{])}
@@ -378,7 +410,7 @@ The best parameter identitified was $\lambda = 0.235829$
 \hlkwd{mean}\hlstd{(lasso.pred} \hlopt{!=} \hlstd{y[}\hlopt{-}\hlstd{training])}
 \end{alltt}
 \begin{verbatim}
-## [1] 0.22
+## [1] 0.28
 \end{verbatim}
 \begin{alltt}
 \hlkwd{table}\hlstd{(lasso.pred, y[}\hlopt{-}\hlstd{training])}
@@ -386,8 +418,7 @@ The best parameter identitified was $\lambda = 0.235829$
 \begin{verbatim}
 ##           
 ## lasso.pred  1  2
-##          1  1  1
-##          2 10 38
+##          2 14 36
 \end{verbatim}
 \begin{alltt}
 \hlstd{out}\hlkwb{=}\hlkwd{glmnet}\hlstd{(x,y,}\hlkwc{alpha}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{lambda}\hlstd{=grid)}
@@ -397,11 +428,11 @@ The best parameter identitified was $\lambda = 0.235829$
 \begin{verbatim}
 ## 5 x 1 sparse Matrix of class "dgCMatrix"
 ##                        1
-## (Intercept)  2.233137835
-## V2          -0.004893103
-## V3           0.145776784
-## V5          -0.047656564
-## V20         -0.214164730
+## (Intercept)  2.217055813
+## V2          -0.004685815
+## V3           0.137842857
+## V5          -0.041284671
+## V20         -0.211038872
 \end{verbatim}
 \end{kframe}
 \end{knitrout}

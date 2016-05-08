@@ -30,10 +30,11 @@ set.seed(1933)
 names(Ozone) <- c("mo","day","wday","maxoz","pressh","wind","hum",
                   "temp1","temp2","inverh","pressg","invert","vis")
 Ozone$time = 1:366
-Ozone = na.omit(Ozone)
+Ozone = Ozone[!is.na(Ozone$maxoz),]
 train = sample(nrow(Ozone), nrow(Ozone)*.70)
 Ozone_train = Ozone[train,]
 @
+Any observations were maxoz is na is dropped because, if there is no response variable, then the observation is not useful because there is no way to benchmark the values.
 \section*{Exercise 2}
 <<>>=
 library(boot) 
@@ -46,20 +47,21 @@ for(i in d){
 plot(d,poly.cv.error,type="b")
 ozone_pm = lm(maxoz~poly(time,d[poly.cv.error == min(poly.cv.error)]), data = Ozone_train)
 RSS = sum((predict(ozone_pm, Ozone[-train,])-Ozone[-train,"maxoz"])^2)
-RSE = sqrt(RSS/(nrow(Ozone[-train,])-(ncol(Ozone_train)-1)-1)) 
+RSE = sqrt(RSS/(nrow(Ozone[-train,]))) 
 @
-Cross Validation identitifed \Sexpr{d[poly.cv.error == min(poly.cv.error)]} as the degree of polynomial best suited for predicting Max Ozone. The test Residual Standard Error is \Sexpr{RSE}.
+Cross Validation identified \Sexpr{d[poly.cv.error == min(poly.cv.error)]} as the degree of polynomial best suited for predicting Max Ozone. The test Residual Standard Error is \Sexpr{RSE}.
 
 \section*{Exercise 3}
 <<>>=
 library(splines)
 RSE = 2:40
 for(i in 2:40){
+  
   ozone_smoothing.splines = smooth.spline(Ozone_train$time, 
                                           Ozone_train$maxoz, df = i)
    RSS = sum((predict(ozone_smoothing.splines, 
                      Ozone[-train,"time"])$y-Ozone[-train,"maxoz"])^2)
-   RSE[i-1] = sqrt(RSS/(nrow(Ozone[-train,])-(ncol(Ozone_train)-1)-1))
+   RSE[i-1] = sqrt(RSS/(nrow(Ozone[-train,])))
 }
 plot(2:40, RSE, xlab = "degrees of freedom", type = "b")
 
@@ -68,12 +70,12 @@ points((which.min(RSE)+1),
        RSE[which.min(RSE)],
        col="red",cex=2,pch=20)
 @
-Using the Validation set approach, a smooth spline with \Sexpr{(which.min(RSE)+1)} degrees of freedom is best suited for predicting Max Ozone. The test Residual Standard Error at \Sexpr{(which.min(RSE)+1)} degrees of freedom is \Sexpr{RSE[which.min(RSE)]}. It's interesting to see such a sudden drop in RSE frome 2 to \Sexpr{(which.min(RSE)+1)} degrees of freedom, but after-wards, a wave like structure occur. I wondering if more than 40 degrees of freedom were explored, if the wave would just continue.
+Using the Validation set approach, a smooth spline with \Sexpr{(which.min(RSE)+1)} degrees of freedom is best suited for predicting Max Ozone. The test Residual Standard Error at \Sexpr{(which.min(RSE)+1)} degrees of freedom is \Sexpr{RSE[which.min(RSE)]}. It's interesting to see such a sudden drop in RSE from 2 to \Sexpr{(which.min(RSE)+1)} degrees of freedom, but after-wards, a wave like structure occur. I wondering if more than 40 degrees of freedom were explored, if the wave would just continue.
 \section*{Exercise 4}
 <<>>=
 library(leaps)
-ozone_best_subset = regsubsets(maxoz~.,Ozone_train[,c("maxoz","pressh","wind","hum",
-                  "temp1","temp2","inverh","pressg","invert","vis")])
+ozone_best_subset = regsubsets(maxoz~.,na.omit(Ozone_train[,c("maxoz","pressh","wind","hum",
+                  "temp1","temp2","inverh","pressg","invert","vis")]))
 plot(summary(ozone_best_subset)$bic ,
      xlab="Number of Variables ",ylab="BIC", type='l')
 points(which.min(summary(ozone_best_subset)$bic),
@@ -82,49 +84,69 @@ points(which.min(summary(ozone_best_subset)$bic),
 model = coef(ozone_best_subset ,which.min(summary(ozone_best_subset)$bic))[-1]
 
 
-best_oz_model = glm(maxoz~., Ozone_train[, c(4, which(names(Ozone) %in% names(model)))], family = "gaussian")
+best_oz_model = glm(maxoz~., na.omit(Ozone_train[, c(4, which(names(Ozone) %in% names(model)))]), family = "gaussian")
 
-RSS = sum((predict(best_oz_model, Ozone[-train, which(names(Ozone) %in% names(model))])-Ozone[-train,4])^2)
-RSE = sqrt(RSS/(nrow(Ozone[-train,])-(ncol(Ozone_train)-1)-1)) 
+Ozone_test_na_omit = na.omit(Ozone[-train, which(names(Ozone) %in% names(model))])
+
+RSS = sum((predict(best_oz_model, Ozone_test_na_omit)-Ozone_test_na_omit[-train,4])^2)
+RSE = sqrt(RSS/(nrow(Ozone[-train,]))) 
 
 @
-Based in the plot, the subset with the losest BIC is at \Sexpr{which.min(summary(ozone_best_subset)$bic)} Best subset selection identified a model with the coefficients: \Sexpr{paste(names(model), collapse=",")} as the best performing model based on BIC. The model was then used to create a glm object, with equivilant coefficients: \Sexpr{paste(coef(best_oz_model)[-1], collapse=",")} with a test RSE of \Sexpr{RSE}
+In order to attempt the best subset selection, the test and training observations' response and predictive variables cannot be NA, so na.omit needed to be applied on the datasets. Based in the plot, the subset with the lowest BIC is at \Sexpr{which.min(summary(ozone_best_subset)$bic)} Best subset selection identified a model with the coefficients: \Sexpr{paste(names(model), collapse=",")} as the best performing model based on BIC. The model was then used to create a glm object, with equivalent coefficients: \Sexpr{(coef(best_oz_model))[-1]} with a test RSE of \Sexpr{RSE}
 \section*{Exercise 5}
 <<>>=
 library(glmnet)
 grid = 10^seq(10,-2,length=100)
-x = model.matrix(maxoz~.,Ozone)[,-1]
-y = Ozone$maxoz
-Ozone_lasso = glmnet(x[train ,], y[train], alpha = 1, lambda = grid)
-cv.out=cv.glmnet(x[train ,],y[train],alpha=1)
+x = model.matrix(maxoz~.,na.omit(Ozone_train))[,-1]
+y = na.omit(Ozone_train)$maxoz
+Ozone_lasso = glmnet(x, y, alpha = 1, lambda = grid)
+cv.out=cv.glmnet(x,y,alpha=1)
 plot(cv.out)
 bestlam=cv.out$lambda.min
 
 
 RSS = sum((predict(Ozone_lasso,s=bestlam,
-                              newx=x[-train,])-Ozone[-train, "maxoz"])^2)
-RSE = sqrt(RSS/(nrow(Ozone[-train,])-(ncol(Ozone_train)-1)-1))
+                              newx=model.matrix(maxoz~.,na.omit(Ozone[-train,]))[,-1]
+                   )-na.omit(Ozone[-train,])$maxoz)^2)
+RSE = sqrt(RSS/(nrow(Ozone[-train,])))
 
-out=glmnet(x[train ,],y[train],alpha=1,lambda=grid)
+out=glmnet(x,y,alpha=1,lambda=grid)
 lasso.coef=predict(out,type="coefficients",s=bestlam)
-lasso.coef[lasso.coef[,1]!=0,]
+
 @
-The best parameter identitified was $\lambda = \Sexpr{bestlam}$
+The best parameter identified was $\lambda = \Sexpr{bestlam}$ after applying cross validation and using the lambda that obtained the lowest cross validation error. The coefficients, after applying the L1 penalty, were \Sexpr{names(lasso.coef[lasso.coef[,1]!=0,])[-1]}. The residual squared error was \Sexpr{RSE}. The result performs better than the best subset selection based on the residual squared error, which is interesting and could indicate that solely looking at the BIC for best subset is not the best strategy.   
 \section*{Exercise 6}
 \subsection*{bagging}
 <<>>=
-library(tree)
+library(randomForest)
+Ozone_clean_train = na.omit(Ozone_train)
+Ozone_clean_test = na.omit(Ozone[-train,])
+
+Ozone_bagging = randomForest(maxoz~.,Ozone_clean_train, mtry = ncol(Ozone_train)-1)
+
+RSS = sum((predict(Ozone_bagging ,newdata=Ozone_clean_test)-(Ozone_clean_test$maxoz))^2)
+RSE = sqrt(RSS/(nrow(Ozone[-train,])))
 @
 \subsection*{boosting}
 <<>>=
 library(gbm)
+Ozone_boost=gbm(maxoz~.,data=Ozone[train,],distribution= "gaussian", n.trees=5000, interaction.depth=4)
+
+
+RSS = sum((predict(Ozone_boost,newdata=Ozone[-train,], n.trees=5000)-Ozone[-train,"maxoz"])^2)
+
+RSE = sqrt(RSS/(nrow(Ozone[-train,])))
+
+
 @
 \subsection*{Random Forests}
 <<>>=
-library(randomForest)
+Ozone_rf = randomForest(maxoz~.,Ozone_clean_train, mtry = (ncol(Ozone_train)-1)/3)
 
+RSS = sum((predict(Ozone_rf ,newdata=Ozone_clean_test)-(Ozone_clean_test$maxoz))^2)
+RSE = sqrt(RSS/(nrow(Ozone[-train,])))
 @
-\section*{Bonus}
+\subsection*{Bonus}
 <<>>=
 
 @
@@ -171,6 +193,7 @@ table(boot_results, hepatitis$V1[-training])
 @
 
 <<>>=
+library(tree)
 hep_tree = tree(formula = V1 ~ ., data = hep_train)
 summary(hep_tree)
 plot(hep_tree)
